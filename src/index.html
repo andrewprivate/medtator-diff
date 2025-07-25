@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Medtator XML Diff (Selectable Characters)</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<style>
+:root {
+  --bg:#f5f7fa;
+  --card:#fff;
+  --border:#d5dde6;
+  --border-strong:#b7c2cf;
+  --accent:#2f6fdd;
+  --accent-soft:#e2edff;
+  --text:#1f2e3c;
+  --muted:#5a6b7d;
+  --warning:#c04800;
+  --error-accent:#d75a5a;
+  --warning-accent:#f0b400;
+  --good-accent:#2bad57;
+  --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,"Courier New",monospace;
+}
+
+body { margin:0; background:var(--bg); font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,sans-serif; color:var(--text); padding:1.5rem clamp(.8rem,2vw,2.5rem); font-size:15px; line-height:1.4; }
+h1 { margin:.2rem 0 1rem; font-size:1.4rem; }
+a { color:var(--accent); }
+
+#controls { display:flex; flex-wrap:wrap; gap:.75rem; align-items:center; background:#fff; border:1px solid var(--border); border-radius:.6rem; padding:.75rem 1rem; margin:0 0 1rem; box-shadow:0 1px 2px rgba(0,0,0,.05),0 4px 12px -6px rgba(0,0,0,.15); }
+#controls label { font-weight:600; font-size:.75rem; letter-spacing:.07em; text-transform:uppercase; color:var(--muted); }
+#modeSelect { padding:.4rem .6rem; border:1px solid var(--border-strong); border-radius:.45rem; background:#fff; font:inherit; }
+.toggle-opt { display:flex; gap:.5rem; align-items:center; font-size:.8rem; }
+small.help { font-size:.7rem; color:var(--muted); flex:1 1 100%; }
+
+#dropZone { border:2px dashed var(--border-strong); border-radius:.6rem; padding:1.8rem 1.2rem; text-align:center; background:#fff; color:#546578; cursor:pointer; transition:.15s; margin-bottom:1rem; }
+#dropZone:hover,#dropZone.dragover { background:#f0f6ff; border-color:var(--accent); color:#223b66; }
+
+.group { background:var(--card); border:1px solid var(--border); border-left:5px solid var(--accent); border-radius:.6rem; padding:.85rem .95rem 1.05rem; margin:0 0 1rem; position:relative; box-shadow:0 1px 2px rgba(0,0,0,.05),0 4px 12px -6px rgba(0,0,0,.15); overflow-x:auto; }
+.group.good-accent { border-left-color:var(--good-accent); }
+.group.error-accent { border-left-color:var(--error-accent); }
+.group.warning-accent { border-left-color:var(--warning-accent); }
+
+.group > h3 { margin:0 0 .65rem; font-size:1rem; font-weight:600; letter-spacing:.5px; display:flex; gap:.65rem; align-items:center; color:#183153; }
+.group > h3::after { content:attr(data-span-count); background:var(--accent-soft); color:var(--accent); font-size:.65rem; font-weight:600; letter-spacing:.07em; padding:.18rem .55rem .2rem; border-radius:1rem; text-transform:uppercase; }
+
+.group table { width:100%; border-collapse:collapse; font-size:13px; border:1px solid var(--border); border-radius:.4rem; overflow:hidden; }
+.group table th,.group table td { padding:.5rem .55rem; border-bottom:1px solid var(--border); vertical-align:top; }
+.group table th { background:linear-gradient(#f2f6fa,#e9eef4); position:sticky; top:0; z-index:1; text-align:left; font-weight:600; font-size:.7rem; letter-spacing:.8px; text-transform:uppercase; color:var(--muted); }
+.group table tbody tr:nth-child(even){ background:#fafbfd; }
+.group table tbody tr:hover { background:#eef5ff; }
+.group table tbody tr:last-child td { border-bottom:none; }
+.group td:first-child { font-weight:500; color:#1b3f66; width: 15%;}
+
+.group td:nth-child(2){ width: 6%; font-weight:600; letter-spacing:.4px; position:relative; white-space:nowrap; padding-left:.7rem; }
+.group td:nth-child(2)::before { content:""; position:absolute; left:0; top:.65rem; width:6px; height:.9rem; border-radius:3px; background:#7990a6; }
+.group td:nth-child(3) {width: 30%;}
+.group td:nth-child(4) {width: 6%;}
+.tag-BPSD::before { background:#005fcc!important; }
+.tag-Other::before { background:#7a5af5!important; }
+.tag-Physical::before { background:#ff6f3c!important; }
+.tag-Verbal::before { background:#f0b400!important; }
+.tag-Rejection::before { background:#d1458e!important; }
+
+.group td:nth-child(4){ font:500 .7rem var(--mono); background:#f4f7fa; border:1px solid #e2e8ef; border-radius:4px; color:#555; }
+
+.file-list {
+    list-style:none; padding:0; margin:0; display:flex; flex-direction: column; gap:.5rem;
+}
+.file-list li {
+    padding: .28rem .5rem .25rem .55rem; background:#f9fbfd; border:1px solid var(--border); border-radius:.45rem; font-size:.7rem; font-weight:600; color:#2f3b4d;
+    display:flex; align-items:center; gap:.5rem; cursor:pointer;
+}
+
+
+.prop-list { list-style:none; padding:0; margin:0; display:flex; flex-wrap:wrap; gap:.35rem; }
+.prop-list li { font-size:.6rem; font-weight:600; letter-spacing:.5px; text-transform:uppercase; padding:.28rem .5rem .25rem .55rem; border-radius:.55rem; background:#eef2f6; color:#385064; border:1px solid #d5dde5; white-space:nowrap; }
+
+.prop-list li.diff { background:#ffe0e0; color:#a80000; border-color:#ffb3b3; }
+
+.prop-certainty-confirmed { background:#e5f4e9; color:#1c502d; border-color:#c5e7cf; }
+.prop-certainty-negated { background:#fde9e9; color:#7d2222; border-color:#f7cccc; }
+.prop-status-present { background:#e6f1ff; color:#1a4f93; border-color:#c8def9; }
+.prop-status-history,.prop-status-chronic { background:#fff4e1; color:#8b5a19; border-color:#f3dbb6; }
+.prop-severity-mild { background:#f3ecff; color:#5a2fa3; border-color:#e4d5ff; }
+.prop-severity-moderate { background:#fff0f4; color:#a32555; border-color:#f8d2e0; }
+.prop-frequency-daily,.prop-frequency-days1_3 { background:#e9fbf7; color:#0f5e4d; border-color:#c2efe4; }
+.prop-exclusion-yes { background:#ebeef2; color:#495667; border-style:dashed; }
+.prop-fall-risk,.prop-safety { background:#ffe8ec; color:#9d1f33; border-color:#f7ccd3; }
+.prop-agitation,.prop-restless,.prop-anxious { background:#fff4f0; color:#8f3610; border-color:#f3dbc8; }
+
+/* Character visualization */
+.whitespace-grid { display:block; font:.78rem/1.3 var(--mono); font-variant-ligatures:none; font-feature-settings:"liga" 0, "clig" 0; background:#fff; border:1px dashed #c9d2dd; border-radius:4px; padding:2px 4px; white-space:normal; position:relative; }
+
+.ch { display:inline-block; position:relative; vertical-align:top; box-sizing:content-box; user-select:text; white-space:pre; }
+.ch.ws { color:transparent; }
+body.mode-symbols .ch.ws.show-symbol, body.mode-reveal .ch.ws.show-symbol { color:#1f2e3c; }
+body.mode-reveal .ch.ws.show-symbol { opacity:.55; }
+/* .ch.lf, .ch.crlf, .ch.cr { display:block; height:1.3em; width:100%; } */
+
+/* markers arrows for leading/trailing */
+.ch.leading::before, .ch.trailing::before { position:absolute; top:-0.8em; font-size:.55em; color:var(--warning); }
+.ch.leading::before { content:"⟵"; left:0; }
+.ch.trailing::before { content:"⟶"; right:0; }
+
+
+@media (max-width:880px){ body { font-size:14px; } .group table { font-size:12px; } }
+@media print { #controls,#dropZone { display:none !important; } .group { box-shadow:none; page-break-inside:avoid; } }
+</style>
+</head>
+<body class="mode-reveal">
+<h1>Compare Medtator Annotations</h1>
+
+<section id="controls">
+  <label for="modeSelect">Whitespace Mode</label>
+  <select id="modeSelect">
+    <option value="normal">Normal</option>
+    <option value="reveal" selected>Reveal</option>
+  </select>
+  
+  <div class="toggle-opt" style="display: none;">
+    <input type="checkbox" id="showNewline" checked>
+    <label for="showNewline">Show newline markers</label>
+  </div>
+  <small class="help">Whitespace Symbols: · (space) ¶ (newline) \t (tab).</small>
+</section>
+
+<input type="file" id="fileInput" accept=".xml" multiple hidden>
+<div id="dropZone">Click or Drag & Drop Medtator XML Files Here</div>
+<div id="diffresults" aria-live="polite"></div>
+
+<script src="diff.js"></script>
+</body>
+</html>
