@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Simple model</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+    <main class="app">
+        <h1>Load XML Directories</h1>
+
+        <section class="loader" aria-label="Primary XML directory">
+            <h2>Primary directory</h2>
+            <p class="loader__hint">Choose or drop a folder that contains XML files.</p>
+            <input class="loader__input" type="file" id="primaryDirectory" name="primaryDirectory" aria-label="Select primary XML directory" webkitdirectory directory multiple accept=".xml" />
+            <div class="dropzone" role="button" tabindex="0" data-input="primaryDirectory" data-ext=".xml" data-label="XML">
+                <p class="dropzone__label">Drag &amp; drop XML folder here or click to browse</p>
+                <p class="dropzone__status" aria-live="polite"></p>
+            </div>
+        </section>
+
+        <section class="loader" aria-label="Secondary text directory">
+            <h2>Secondary directory</h2>
+            <p class="loader__hint">Choose or drop a folder that contains TXT files.</p>
+            <input class="loader__input" type="file" id="secondaryDirectory" name="secondaryDirectory" aria-label="Select secondary TXT directory" webkitdirectory directory multiple accept=".txt" />
+            <div class="dropzone" role="button" tabindex="0" data-input="secondaryDirectory" data-ext=".txt" data-label="TXT">
+                <p class="dropzone__label">Drag &amp; drop TXT folder here or click to browse</p>
+                <p class="dropzone__status" aria-live="polite"></p>
+            </div>
+        </section>
+
+        <section class="model-view" aria-live="polite">
+            <h2>Parsed annotation model</h2>
+            <p class="model-view__empty" id="modelViewEmpty">Load XML or TXT folders to see parsed content.</p>
+            <div class="model-view__content" id="modelView" hidden></div>
+        </section>
+    </main>
+
+    <script src="main.js"></script>
+</body>
+</html>
