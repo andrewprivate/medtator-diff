@@ -17,7 +17,7 @@ const progressFill = document.getElementById("batch-progress-fill");
 const progressLabel = document.getElementById("batch-progress-label");
 const singleProgressFill = document.getElementById("single-progress-fill");
 
-let workerDevice = "wasm";
+let workerDevice = "webgpu";
 let worker = createWorker(workerDevice);
 const deviceSelect = document.getElementById("device-select");
 
