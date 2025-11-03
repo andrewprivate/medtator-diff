@@ -1,9 +1,6 @@
 import { env, pipeline } from 'https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.7.6';
 
-env.localModelPath = './model/';
-env.allowRemoteModels = false;
-env.allowLocalModels = true;
-env.backends.onnx.device = 'wasm';
+env.allowRemoteModels = true;
 
 let classifierPromise = null;
 let processingQueue = Promise.resolve();
@@ -284,7 +281,7 @@ async function handleClassification({ id, text }) {
     }
 
     if (!classifierPromise) {
-      classifierPromise = pipeline("token-classification", "deid_roberta_i2b2", {
+      classifierPromise = pipeline("token-classification", "andrews3596/deid_roberta_i2b2_quantized", {
         device: currentDevice,
       });
     }
