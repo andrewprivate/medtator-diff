@@ -172,19 +172,7 @@ function groupBioUlEntities(tokens, text) {
     return mergeAdjacentSpans(aggregated);
   }
 
-  const resolvedTokens = attachOffsetsFromPredictions(tokens, text)
-    .filter(
-      (token) =>
-        typeof token.start === "number" &&
-        typeof token.end === "number" &&
-        token.start !== null &&
-        token.end !== null
-    )
-    .sort((a, b) => a.start - b.start);
-
-  if (resolvedTokens.length !== tokens.length) {
-    throw new Error("Token offsets missing; cannot group BIOUL entities.");
-  }
+  const resolvedTokens = attachOffsetsFromPredictions(tokens, text).sort((a, b) => a.start - b.start);
 
   const spans = [];
   let current = null;
