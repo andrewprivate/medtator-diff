@@ -95,7 +95,12 @@ function attachOffsetsFromPredictions(tokens, text) {
     }
 
     if (start === -1) {
-      throw new Error(`Failed to locate token "${decoded}" in source text.`);
+      console.error(`Failed to locate token "${decoded}" in source text.`);
+      return {
+        ...token,
+        start: cursor,
+        end: cursor,
+      };
     }
 
     const end = start + decoded.length;
