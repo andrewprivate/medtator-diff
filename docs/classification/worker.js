@@ -82,11 +82,7 @@ function attachOffsetsFromPredictions(tokens, text) {
 
     const decoded = normalizeTokenWord(token.word || "").trim();
     if (!decoded) {
-      return {
-        ...token,
-        start: cursor,
-        end: cursor,
-      };
+      return null;
     }
 
     let start = text.indexOf(decoded, cursor);
@@ -96,11 +92,7 @@ function attachOffsetsFromPredictions(tokens, text) {
 
     if (start === -1) {
       console.error(`Failed to locate token "${decoded}" in source text.`);
-      return {
-        ...token,
-        start: cursor,
-        end: cursor,
-      };
+      return null;
     }
 
     const end = start + decoded.length;
@@ -111,7 +103,7 @@ function attachOffsetsFromPredictions(tokens, text) {
       start,
       end,
     };
-  });
+  }).filter((token) => token !== null);
 }
 
 function groupBioUlEntities(tokens, text) {
