@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, minimum-scale=1"
+    />
+    <title>Clinical Note De-identification</title>
+    <link rel="stylesheet" href="./style.css" />
+    <style>
+      .output-card {
+        display: grid;
+        gap: 8px;
+      }
+
+      .output-card h2 {
+        margin: 0;
+        font-size: 0.95rem;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: var(--muted);
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <header>
+        <h1>Clinical Note De-identification</h1>
+        <p>
+          Analyze free-text clinical notes with
+          <strong>Obi&nbsp;DeID RoBERTa (i2b2)</strong> to surface protected
+          health information. Text never leaves your browser &mdash; inference
+          runs completely on-device through transformers.js.
+        </p>
+        <span class="model-source">
+          Model:&nbsp;
+          <a
+            href="https://huggingface.co/obi/deid_roberta_i2b2"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            obi/deid_roberta_i2b2
+          </a>
+        </span>
+      </header>
+
+      <section aria-labelledby="input-title">
+        <div>
+          <label id="input-title" for="note-input">Clinical note</label>
+          <textarea
+            id="note-input"
+            placeholder="Paste or type a clinical note to identify PHI markers..."
+            spellcheck="false"
+          ></textarea>
+        </div>
+
+        <div class="actions">
+          <button id="classify-btn" type="button">
+            <span id="btn-label">Run De-identification</span>
+            <span id="btn-spinner" aria-hidden="true" style="display: none;">
+              &#x27F3;
+            </span>
+          </button>
+          <button id="sample-btn" class="secondary" type="button">
+            Load sample note
+          </button>
+          <button id="clear-btn" class="secondary" type="button">Clear</button>
+          <label class="device-select">
+            Device
+            <select id="device-select">
+              <option value="wasm" selected>WASM</option>
+              <option value="webgpu">WebGPU</option>
+            </select>
+          </label>
+        </div>
+
+        <div id="status" role="status" aria-live="polite"></div>
+
+        <div class="batch-section" aria-labelledby="batch-title">
+          <h2 id="batch-title">Batch Processing</h2>
+          <p class="batch-hint">
+            Drop a folder of .txt files below or click to choose one. Process
+            them locally and inspect the results in the viewer.
+          </p>
+          <div
+            id="drop-zone"
+            class="drop-zone"
+            tabindex="0"
+            role="button"
+            aria-label="Drop folder with text files or press enter to choose"
+          >
+            Drop .txt files or folders here, or click to browse.
+          </div>
+          <input
+            id="folder-input"
+            type="file"
+            webkitdirectory
+            directory
+            multiple
+            hidden
+          />
+          <div class="batch-actions">
+            <button id="process-all-btn" type="button" class="secondary" disabled>
+              Process all files
+            </button>
+            <button id="download-all-btn" type="button" class="secondary" disabled>
+              Download de-identified files
+            </button>
+          </div>
+          <div class="batch-progress">
+            <div class="progress-bar">
+              <div
+                id="batch-progress-fill"
+                class="progress-fill"
+                role="progressbar"
+                aria-valuemin="0"
+                aria-valuemax="100"
+                aria-valuenow="0"
+                style="width: 0%;"
+              ></div>
+            </div>
+            <span id="batch-progress-label">Idle</span>
+          </div>
+          <div class="batch-select">
+            <label for="file-select">Inspect file</label>
+            <select id="file-select" disabled>
+              <option value="">No files loaded</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="output" aria-live="polite">
+          <div class="output-card">
+            <h2>Labelled text</h2>
+            <div class="progress-bar single" aria-hidden="true">
+              <div
+                id="single-progress-fill"
+                class="progress-fill"
+                role="progressbar"
+                aria-valuemin="0"
+                aria-valuemax="100"
+                aria-valuenow="0"
+                style="width: 0%;"
+              ></div>
+            </div>
+            <div class="highlight-container" id="highlighted-text">
+              De-identification highlights will appear here.
+            </div>
+          </div>
+          <div class="output-card">
+            <h2>De-identified note</h2>
+            <div class="highlight-container" id="deidentified-text">
+              Run de-identification to see the scrubbed note.
+            </div>
+          </div>
+          <div class="output-card">
+            <h2>Detected spans</h2>
+            <div id="tabular-results"></div>
+          </div>
+        </div>
+
+        <p class="footnote">
+          Inference happens entirely in your browser. Large inputs may take a few
+          seconds on first run while the model downloads.
+        </p>
+      </section>
+    </main>
+
+    <script defer src="./app.js" type="module"></script>
+  </body>
+</html>
